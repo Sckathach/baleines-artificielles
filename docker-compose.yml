@@ -1,0 +1,18 @@
+services:
+  ml-pytorch:
+    image: torching
+    build: .
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./workspace:/workspace
+    env_file:
+      - .env
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    stdin_open: true
+    tty: true
+
