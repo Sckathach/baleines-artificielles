@@ -1,10 +1,21 @@
 services:
+  # Base image with CUDA support, jupyter and nvim configuration
+  base:
+    image: pytorch-image
+    build: 
+      context: . 
+      dockerfile: Containerfile.base
+    entrypoint: /bin/true
+
+  # Base torch image, based on the CUDA image
   ml-pytorch:
-    image: torching
-    build: .
+    image: pytorch-image
+    build:
+      context: .
+      dockerfile: Containerfile.pytorch
     ports:
       - "8888:8888"
-    volumes:
+    volumes: 
       - ./workspace:/workspace
     env_file:
       - .env
@@ -15,5 +26,7 @@ services:
             - capabilities: [gpu]
     stdin_open: true
     tty: true
-    container_name: ml-pytorch-container
+    container_name: pytorch-container
+    depends_on:
+      - base
 
