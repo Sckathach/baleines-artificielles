@@ -49,7 +49,7 @@ RUN pip install --no-cache-dir torch torchvision torchaudio
 # Jax 
 FROM base AS jax 
 
-RUN pip install -U "jax[cuda12]"
+RUN pip install -U "jax[cuda12]" jaxlib
 
 
 
