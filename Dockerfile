@@ -43,4 +43,10 @@ RUN fc-cache -f -v
 COPY jupyter.sh /home/jupyter.sh
 RUN chmod +x /home/jupyter.sh
 
+# Install PyG
+RUN pip install torch_geometric && \
+    pip install --verbose git+https://github.com/pyg-team/pyg-lib.git && \
+    pip install --verbose torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.0+cu118.html 
+
+
 CMD ["bash"]

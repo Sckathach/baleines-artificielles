@@ -15,4 +15,5 @@ services:
             - capabilities: [gpu]
     stdin_open: true
     tty: true
+    container_name: ml-pytorch-container
 
