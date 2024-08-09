@@ -1,9 +1,8 @@
 services:
-  # Service for PyTorch
   ml-pytorch:
     build:
       context: .
-      dockerfile: Containerfile
+      dockerfile: pytorch/Containerfile
       target: pytorch
     image: local/pytorch-image:latest
     ports:
@@ -11,7 +10,7 @@ services:
     volumes:
       - ./workspace:/workspace
     env_file:
-      - .env
+      - share/.env
     deploy:
       resources:
         reservations:
@@ -21,24 +20,37 @@ services:
     tty: true
     container_name: ml-pytorch-container
 
-  # Service for JAX
-  # ml-jax:
-  #   build:
-  #     context: .
-  #     dockerfile: Containerfile
-  #     target: jax
-  #   image: local/jax-image:latest
-  #   ports:
-  #     - "8889:8888"
-  #   volumes:
-  #     - ./workspace:/workspace
-  #   env_file:
-  #     - .env
-  #   deploy:
-  #     resources:
-  #       reservations:
-  #         devices:
-  #           - capabilities: [gpu]
-  #   stdin_open: true
-  #   tty: true
-  #   container_name: ml-jax-container
+  owl-jupyter:
+    build:
+      context: .
+      dockerfile: ocaml/Containerfile
+      target: ocaml
+    image: local/owl-jupyter:latest
+    ports:
+      - "8889:8888"
+    env_file:
+      - share/.env
+    stdin_open: true
+    tty: true
+    container_name: owl-jupyter-container
+
+  ml-jax:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: jax
+    image: local/jax-image:latest
+    ports:
+      - "8890:8888"
+    volumes:
+      - ./workspace:/workspace
+    env_file:
+      - share/.env
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    stdin_open: true
+    tty: true
+    container_name: ml-jax-container

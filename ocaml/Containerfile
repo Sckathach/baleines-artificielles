@@ -22,10 +22,10 @@ RUN wget https://github.com/neovim/neovim/releases/download/stable/nvim.appimage
     rm nvim.appimage
 
 # Copy nvim config files
-COPY ../nvim /root/.config/nvim
+COPY share/nvim /root/.config/nvim
 
 # Copy Nerd Fonts JetBrains Mono for nvchad 
-COPY ../fonts/JetBrainsMono /usr/share/fonts/truetype/jetbrainsmono
+COPY share/fonts/JetBrainsMono /usr/share/fonts/truetype/jetbrainsmono
 
 # Rebuild the font cache
 RUN fc-cache -f -v
@@ -44,10 +44,10 @@ RUN opam init --yes --disable-sandboxing && \
     opam exec -- ocaml-jupyter-opam-genspec && \
     eval `opam config env`
 
-COPY .ocamlinit /root/.ocamlinit
+COPY ocaml/.ocamlinit /root/.ocamlinit
 
 RUN mkdir -p /home/workspace
-COPY jupyter.sh /home/workspace/jupyter.sh
+COPY share/jupyter.sh /home/workspace/jupyter.sh
 RUN chmod +x /home/workspace/jupyter.sh
 WORKDIR /home/workspace
 
