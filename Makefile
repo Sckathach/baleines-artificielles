@@ -1,3 +1,5 @@
+TARGET_PORT=8888
+
 build: 
 	sudo docker-compose build
 
@@ -12,3 +14,9 @@ rebuild:
 	sudo docker-compose down
 	sudo docker-compose rm -f
 	sudo docker-compose up -d --build
+
+dot:
+	dot -Tpng assets/graph.dot -o assets/graph.png
+
+jupyter_clean:
+	kill -9 $(lsof -n -i4TCP:$TARGET_PORT | cut -f 2 -d " ")

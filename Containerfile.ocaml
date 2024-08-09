@@ -1,0 +1,58 @@
+FROM ubuntu:devel AS base
+
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip python3-venv
+
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir jupyter setuptools six
+
+#######################################################
+FROM base AS nvim
+
+# Install Node.js and npm for nvim's LSP
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs
+
+# Download and extract Neovim with appimage
+RUN wget https://github.com/neovim/neovim/releases/download/stable/nvim.appimage && \
+    chmod u+x nvim.appimage && \
+    ./nvim.appimage --appimage-extract && \
+    ln -s /squashfs-root/usr/bin/nvim /usr/bin/nvim && \
+    rm nvim.appimage
+
+# Copy nvim config files
+COPY ../nvim /root/.config/nvim
+
+# Copy Nerd Fonts JetBrains Mono for nvchad 
+COPY ../fonts/JetBrainsMono /usr/share/fonts/truetype/jetbrainsmono
+
+# Rebuild the font cache
+RUN fc-cache -f -v
+
+#######################################################
+FROM nvim AS ocaml 
+
+RUN apt-get install -y gcc build-essential unzip bubblewrap opam libgmp-dev libzmq3-dev pkg-config liblapacke-dev libopenblas-dev && \
+    mkdir -p /home/opam/.jupyter
+
+ENV PATH="/home/opam/.local/bin:/opt/venv/bin:$PATH"
+
+RUN opam init --yes --disable-sandboxing && \
+    eval $(opam env) && \
+    opam install -y jupyter ocaml-lsp-server odoc ocamlfind ocamlformat utop owl owl-top graphics ocamlgraph cohttp-lwt-unix lwt yojson && \
+    opam exec -- ocaml-jupyter-opam-genspec && \
+    eval `opam config env`
+
+COPY .ocamlinit /root/.ocamlinit
+
+RUN mkdir -p /home/workspace
+COPY jupyter.sh /home/workspace/jupyter.sh
+RUN chmod +x /home/workspace/jupyter.sh
+WORKDIR /home/workspace
+
+RUN jupyter kernelspec install --name ocaml-jupyter "$(opam config var share)/jupyter" --user
+
+EXPOSE 8888
+
+CMD ["bash"]

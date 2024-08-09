@@ -22,24 +22,23 @@ services:
     container_name: ml-pytorch-container
 
   # Service for JAX
-  ml-jax:
-    build:
-      context: .
-      dockerfile: Containerfile
-      target: jax
-    image: local/jax-image:latest
-    ports:
-      - "8889:8888"
-    volumes:
-      - ./workspace:/workspace
-    env_file:
-      - .env
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
-    stdin_open: true
-    tty: true
-    container_name: ml-jax-container
-
+  # ml-jax:
+  #   build:
+  #     context: .
+  #     dockerfile: Containerfile
+  #     target: jax
+  #   image: local/jax-image:latest
+  #   ports:
+  #     - "8889:8888"
+  #   volumes:
+  #     - ./workspace:/workspace
+  #   env_file:
+  #     - .env
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - capabilities: [gpu]
+  #   stdin_open: true
+  #   tty: true
+  #   container_name: ml-jax-container

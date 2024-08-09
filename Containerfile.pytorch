@@ -1,8 +1,27 @@
 FROM nvidia/cuda:12.5.1-cudnn-devel-ubuntu20.04 AS base
 
+# Set the DEBIAN_FRONTEND variable to noninteractive to prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
-    apt-get install -y python3-pip python3-dev wget git fontconfig fuse curl unzip && \
+    apt-get install -y software-properties-common build-essential wget git fontconfig fuse curl unzip && \
     rm -rf /var/lib/apt/lists/*
+
+# Set timezone to UTC to avoid interactive prompts
+RUN ln -fs /usr/share/zoneinfo/UTC /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+
+RUN add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y python3.12 python3.12-dev python3.12-distutils python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Update alternatives to point to the new Python version
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
+
+# Install pip for Python 3.12
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12
 
 # Install Node.js and npm for nvim's LSP
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
@@ -24,8 +43,7 @@ COPY fonts/JetBrainsMono /usr/share/fonts/truetype/jetbrainsmono
 # Rebuild the font cache
 RUN fc-cache -f -v
 
-RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir jupyter
+RUN pip install --no-cache-dir --upgrade pip setuptools six jupyter 
 
 WORKDIR /workspace
 
@@ -35,6 +53,9 @@ EXPOSE 8888
 # Lazy script for lazy ppl
 COPY jupyter.sh /home/jupyter.sh
 RUN chmod +x /home/jupyter.sh
+
+# Reset DEBIAN_FRONTEND variable
+ENV DEBIAN_FRONTEND=dialog
 
 CMD ["bash"]
 

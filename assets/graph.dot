@@ -1,0 +1,28 @@
+digraph G {
+    // rankdir=LR;
+    
+    // Nodes
+    "base_cuda" [label="cuda", shape=rectangle];
+    "update_python" [label="python", shape=rectangle];
+    "config_env" [label="nvim", shape=rectangle];
+    "base_ubuntu" [label="ubuntu", shape=rectangle];
+    "install_python_jupyter" [label="python + jupyter venv", shape=rectangle];
+    "jax" [label="jax", shape=rectangle];
+    "sage" [label="sage", shape=rectangle];
+    "pytorch" [label="pytorch", shape=rectangle];
+    "ocaml_dune" [label="ocaml + owl", shape=rectangle];
+    "pyg" [label="pyg", shape=rectangle];
+    "transformers" [label="transformers", shape=rectangle];
+    
+    // Edges
+    "base_cuda" -> "update_python";
+    "update_python" -> "config_env";
+    "base_ubuntu" -> "install_python_jupyter";
+    "install_python_jupyter" -> "config_env";
+    "config_env" -> "jax";
+    "config_env" -> "sage";
+    "config_env" -> "pytorch";
+    "config_env" -> "ocaml_dune";
+    "pytorch" -> "pyg";
+    "pytorch" -> "transformers";
+}
