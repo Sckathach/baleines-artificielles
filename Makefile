@@ -1,14 +1,22 @@
-TARGET_PORT=8888
+PORT=8888
+TARGET=ml-pytorch
 
 build: 
-	sudo docker-compose build
+	sudo docker-compose build 
+# run:
+# sudo docker run -it --rm --gpus all -p 8888:8888 --env-file .env -v $(pwd)/workspace:/workspace
+# run:
+# sudo docker run -d -it -p 8888:8888 --name 404test --mount type=bind,source="$(pwd)"/workspace,target=/workspace base
+
+up:
+	sudo docker compose up -d --build $(TARGET)
 
 run: 
-	sudo docker-compose run --remove-orphans --service-ports ml-pytorch 
+	sudo docker-compose run --remove-orphans --service-ports $(TARGET)
 
 start:
-	sudo docker start ml-pytorch-container
-	sudo docker exec -it ml-pytorch-container /bin/bash
+	sudo docker start $(TARGET)-container
+	sudo docker exec -it $(TARGET)-container /bin/bash
 
 rebuild:
 	sudo docker-compose down
@@ -19,4 +27,4 @@ dot:
 	dot -Tpng assets/graph.dot -o assets/graph.png
 
 jupyter_clean:
-	kill -9 $(lsof -n -i4TCP:$TARGET_PORT | cut -f 2 -d " ")
+	kill -9 $(lsof -n -i4TCP:$PORT | cut -f 2 -d " ")

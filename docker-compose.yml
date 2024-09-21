@@ -2,8 +2,7 @@ services:
   ml-pytorch:
     build:
       context: .
-      dockerfile: pytorch/Containerfile
-      target: pytorch
+      dockerfile: pytorch/Containerfile.base
     image: local/pytorch-image:latest
     ports:
       - "8888:8888"

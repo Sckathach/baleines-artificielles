@@ -58,21 +58,3 @@ RUN chmod +x /home/jupyter.sh
 ENV DEBIAN_FRONTEND=dialog
 
 CMD ["bash"]
-
-####################################################################
-# Base Pytorch
-FROM base AS pytorch 
-
-RUN pip install --no-cache-dir torch torchvision torchaudio
-
-
-###################################################################
-# Jax 
-FROM base AS jax 
-
-RUN pip install --no-cache-dir -U "jax[cuda12]" jaxlib
-
-
-
-
-
